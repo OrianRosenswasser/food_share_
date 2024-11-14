@@ -29,7 +29,7 @@
                     <p>${post.description}</p>
                     ${
                         post.photo
-                            ? `<img src="/media/${post.photo}" alt="Food Image" class="food-image">`
+                            ? `<img src="${post.photo}" alt="Food Image" class="food-image">`
                             : '<p>No image available</p>'
                     }
                     <p class="expiration-date">Expiration Date: ${new Date(post.expiration_date).toLocaleDateString()}</p>

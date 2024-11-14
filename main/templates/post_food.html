@@ -3,60 +3,54 @@
 {% block content %}
 <h1>Post Food</h1>
 
-<form id="post-form" enctype="multipart/form-data">
-    <div>
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required>
-    </div>
-    <div>
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" required></textarea>
-    </div>
-    <div>
-        <label for="photo">Photo:</label>
-        <input type="file" id="photo" name="photo">
-    </div>
-    <div>
-        <label for="whatsapp_link">WhatsApp Link:</label>
-        <input type="text" id="whatsapp_link" name="whatsapp_link" required>
-    </div>
-    <div>
-        <label for="collection_point">Collection Point:</label>
-        <input type="text" id="collection_point" name="collection_point" required>
-    </div>
-    <div>
-        <label for="expiration_date">Expiration Date:</label>
-        <input type="datetime-local" id="expiration_date" name="expiration_date" required>
-    </div>
-    <button type="submit">Post</button>
+<form id="food-post-form">
+    <input type="text" id="title" placeholder="Title" required><br>
+    <textarea id="description" placeholder="Description" required></textarea><br>
+    <input type="number" id="quantity" placeholder="Quantity" required><br>
+    <input type="datetime-local" id="expiration_date" placeholder="Expiration Date" required><br>
+    <input type="text" id="whatsapp_link" placeholder="WhatsApp Link" required><br>
+    <input type="text" id="collection_point" placeholder="Collection Point" required><br>
+    <input type="file" id="photo" accept="image/*"><br>
+    <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+    <button type="button" onclick="submitFoodPost()">Submit Post</button>
 </form>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    document.getElementById('post-form').addEventListener('submit', async function(event) {
-        event.preventDefault();
+    async function submitFoodPost() {
+        const csrfToken = document.getElementById('csrf-token').value;
 
         const formData = new FormData();
         formData.append('title', document.getElementById('title').value);
         formData.append('description', document.getElementById('description').value);
-        formData.append('photo', document.getElementById('photo').files[0]);
+        formData.append('quantity', document.getElementById('quantity').value);
+        
+        // Ensure expiration date is in the correct format for your backend
+        const expirationDate = document.getElementById('expiration_date').value;
+        if (expirationDate) {
+            formData.append('expiration_date', expirationDate);
+        } else {
+            alert('Please select an expiration date.');
+            return;
+        }
+
         formData.append('whatsapp_link', document.getElementById('whatsapp_link').value);
         formData.append('collection_point', document.getElementById('collection_point').value);
-        formData.append('expiration_date', document.getElementById('expiration_date').value);
+        formData.append('photo', document.getElementById('photo').files[0]);
 
         try {
-            const response = await axios.post('/food_feed/', formData, {
+            const response = await axios.post('/post_food/', formData, {  <!-- Same path here -->
                 headers: {
+                    'X-CSRFToken': csrfToken,
                     'Content-Type': 'multipart/form-data'
                 }
             });
             alert('Food post created successfully!');
-            window.location.href = '/food_feed/';  // Redirect to the food feed page
+            document.getElementById("food-post-form").reset();
         } catch (error) {
             console.error('Error creating food post:', error);
-            alert('Failed to create food post');
+            alert('Failed to create food post. Please try again.');
         }
-    });
+    }
 </script>
-
 {% endblock %}
