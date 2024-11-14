@@ -29,13 +29,13 @@
                     <p>${post.description}</p>
                     ${
                         post.photo
-                            ? `<img src="${post.photo}" alt="Food Image" class="food-image">`
+                            ? `<img src="/media/${post.photo}" alt="Food Image" class="food-image">`
                             : '<p>No image available</p>'
                     }
                     <p class="expiration-date">Expiration Date: ${new Date(post.expiration_date).toLocaleDateString()}</p>
                     <p>Contact: <a href="https://wa.me/${post.whatsapp_link}">WhatsApp</a></p>
                     <p>Collection Point: ${post.collection_point}</p>
-                    ${isOwnPost ? `
+                    ${isOwnPost ? ` 
                         <button class="edit-btn" data-id="${post.id}">Edit</button>
                         <button class="delete-btn" data-id="${post.id}">Delete</button>
                     ` : ''}

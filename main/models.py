@@ -21,7 +21,7 @@ class FoodPost(models.Model):
     photo = models.ImageField(upload_to='food_posts/', null=True, blank=True)
     collection_point = models.CharField(max_length=255, null=False, default='Unknown')
     whatsapp_link = models.CharField(max_length=15, null=True, blank=True)    
-    
+
     def __str__(self):
         return f"{self.title}"
     
