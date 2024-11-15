@@ -84,5 +84,21 @@ def food_feed(request, pk=None):
 
 
 
+@api_view(['GET', 'POST'])
+def register(request):
+    if request.method == 'GET':
+        # For GET request, simply return the registration page
+        return render(request, 'register.html')
+    
+    if request.method == 'POST':
+        # Check if email already exists in the database
+        if Member.objects.filter(email=request.data.get('email')).exists():
+            return Response({"detail": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
-
+        # Proceed to serialize and save the new user
+        serializer = MemberSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

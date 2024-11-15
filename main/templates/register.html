@@ -5,23 +5,23 @@
 {% block content %}
 <div class="form-container">
     <h1 class="emoji">🎉 Register</h1>
-    <form method="post">
+    <form id="registerForm">
         {% csrf_token %}
         <div class="mb-3">
-            <label for="id_firstname" class="form-label">First Name</label>
-            {{ form.firstname }}
+            <label for="firstname" class="form-label">First Name</label>
+            <input type="text" id="firstname" name="firstname" class="form-control" placeholder="First Name" required>
         </div>
         <div class="mb-3">
-            <label for="id_lastname" class="form-label">Last Name</label>
-            {{ form.lastname }}
+            <label for="lastname" class="form-label">Last Name</label>
+            <input type="text" id="lastname" name="lastname" class="form-control" placeholder="Last Name" required>
         </div>
         <div class="mb-3">
-            <label for="id_email" class="form-label">Email</label>
-            {{ form.email }}
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="Email" required>
         </div>
         <div class="mb-3">
-            <label for="id_password" class="form-label">Password</label>
-            {{ form.password }}
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
         </div>
 
         <button type="submit" class="btn btn-lg w-100">🎈 Register Now</button>
@@ -30,10 +30,39 @@
     <div class="text-center mt-3">
         <a href="{% url 'login' %}">Already have an account? Log in here 👉</a>
     </div>
+
+    <div class="error-message" id="error-message"></div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();  // Prevent form from submitting normally
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;  // Get CSRF token
+
+        const userData = {
+            firstname: document.getElementById('firstname').value,
+            lastname: document.getElementById('lastname').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+        };
+
+        try {
+            const response = await axios.post('/register/', userData, {
+                headers: {
+                    'X-CSRFToken': csrfToken  // CSRF token for protection
+                }
+            });
+
+            if (response.status === 201) {
+                // Redirect to the home page after successful registration
+                window.location.href = '/';  // This will send the user to the home page
+            }
+        } catch (error) {
+            console.log(error);
+            const errorMessage = error.response ? error.response.data.detail || 'Registration failed' : 'Registration failed. Please try again.';
+            document.getElementById('error-message').innerText = errorMessage;
+        }
+    });
+</script>
 {% endblock %}
-
-
-
-
-

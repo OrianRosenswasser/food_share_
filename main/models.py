@@ -2,6 +2,7 @@
 from datetime import datetime  # Correct import
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.hashers import make_password, check_password
 
 class Member(models.Model):
     firstname = models.CharField(max_length=255)
@@ -11,6 +12,12 @@ class Member(models.Model):
 
     def __str__(self):
         return f"{self.firstname} {self.lastname}"
+    
+    def get_food_posts_count(self):
+        return self.foodpost_set.count()
+
+    def get_food_requests_count(self):
+        return self.foodrequest_set.count()
 
 class FoodPost(models.Model):
     title = models.CharField(max_length=100)
@@ -32,7 +39,3 @@ class FoodRequest(models.Model):
     def __str__(self):
         return f"Request for {self.food_post} by {self.requested_by or 'Unknown'}"
     
-
-
-
-

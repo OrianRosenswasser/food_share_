@@ -4,15 +4,50 @@
 
 {% block content %}
 <div class="form-container">
-    <h1 class="emoji">🔑 Login</h1>
-    <form method="post">
+    <h1 class="emoji">🎉 Login</h1>
+    <form id="login-form">
         {% csrf_token %}
-        <button type="submit" class="btn btn-lg w-100">🚪 Log In</button>
+        <div class="mb-3">
+            <label for="id_email" class="form-label">Email</label>
+            <input type="email" name="email" id="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="id_password" class="form-label">Password</label>
+            <input type="password" name="password" id="password" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-lg w-100">🎈 Log In</button>
     </form>
 
     <div class="text-center mt-3">
-        <a href="{% url 'register' %}">New here? Register now 🎈</a>
+        <a href="{% url 'register' %}">Don't have an account? Register here 👉</a>
     </div>
 </div>
-{% endblock %}
 
+<script>
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        try {
+            const response = await axios.post('/login/', {
+                email: email,
+                password: password
+            }, {
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            });
+            console.log('Login successful:', response);
+            window.location.href = '/';  // Redirect to homepage after successful login
+        } catch (error) {
+            console.error('Login failed:', error.response.data);
+            alert(error.response.data.detail || 'Login failed. Please try again.');
+        }
+    });
+</script>
+{% endblock %}

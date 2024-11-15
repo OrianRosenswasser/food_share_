@@ -29,11 +29,3 @@ class FoodRequestSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['requested_by'] = None
         return super().create(validated_data)
-
-    
-
-
-
-
-
-
