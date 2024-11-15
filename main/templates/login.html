@@ -43,7 +43,7 @@
                 }
             });
             console.log('Login successful:', response);
-            window.location.href = '/';  // Redirect to homepage after successful login
+            window.location.href = '/';
         } catch (error) {
             console.error('Login failed:', error.response.data);
             alert(error.response.data.detail || 'Login failed. Please try again.');

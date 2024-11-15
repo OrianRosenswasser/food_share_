@@ -1,4 +1,4 @@
-{% extends "master.html" %}
+    % extends "master.html" %}
 
 {% block title %}Register{% endblock %}
 
@@ -37,7 +37,7 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     document.getElementById('registerForm').addEventListener('submit', async function(e) {
-        e.preventDefault();  // Prevent form from submitting normally
+        e.preventDefault();
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;  // Get CSRF token
 
         const userData = {
@@ -50,13 +50,13 @@
         try {
             const response = await axios.post('/register/', userData, {
                 headers: {
-                    'X-CSRFToken': csrfToken  // CSRF token for protection
+                    'X-CSRFToken': csrfToken
                 }
             });
 
             if (response.status === 201) {
-                // Redirect to the home page after successful registration
-                window.location.href = '/';  // This will send the user to the home page
+                
+                window.location.href = '/';
             }
         } catch (error) {
             console.log(error);

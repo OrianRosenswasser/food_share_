@@ -1,5 +1,5 @@
 # models.py
-from datetime import datetime  # Correct import
+from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password, check_password
@@ -34,7 +34,7 @@ class FoodPost(models.Model):
     
 class FoodRequest(models.Model):
     food_post = models.ForeignKey(FoodPost, on_delete=models.CASCADE)
-    requested_by = models.ForeignKey(Member, on_delete=models.CASCADE, null=True, blank=True)  # Optional
+    requested_by = models.ForeignKey(Member, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"Request for {self.food_post} by {self.requested_by or 'Unknown'}"

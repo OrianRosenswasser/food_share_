@@ -24,7 +24,7 @@ class FoodPostSerializer(serializers.ModelSerializer):
 class FoodRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FoodRequest
-        fields = ['food_post']  # Only the food_post field will be passed in the request
+        fields = ['food_post']
 
     def create(self, validated_data):
         validated_data['requested_by'] = None

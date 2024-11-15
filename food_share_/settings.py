@@ -10,9 +10,6 @@ import dj_database_url
 
 env = environ.Env()
 
-# Initialize environ
-env = environ.Env()
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-lw=($j6%1gic1(@%laug+pa-xu7zf2ip#1uf4qu&(3vifw29fh'
@@ -79,8 +76,6 @@ import dj_database_url
 
 env = environ.Env()
 
-# Initialize environ
-env = environ.Env()
 
 # Specify the path to your .env file (make sure the path is correct)
 environ.Env.read_env(env_file=os.path.join(BASE_DIR, '.env')) 

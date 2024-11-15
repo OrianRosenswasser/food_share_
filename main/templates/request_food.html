@@ -38,14 +38,14 @@
         try {
             const response = await axios.post(`/request_food/${foodPostId}/`, {
                 food_post: foodPostId,
-                // If you have user info like `requested_by`, you can send it here
+               
             }, {
                 headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',  // CSRF token for security
+                    'X-CSRFToken': '{{ csrf_token }}',
                 }
             });
-            alert(response.data.message);  // Display success message from API
-            window.location.href = '/food_feed/';  // Redirect after success
+            alert(response.data.message);
+            window.location.href = '/food_feed/';
         } catch (error) {
             console.error('Error submitting food request:', error);
             alert('An error occurred while submitting your request. Please try again.');
