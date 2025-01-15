@@ -52,7 +52,7 @@ ROOT_URLCONF = 'food_share_.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR/'templates'],
+        'DIRS': [BASE_DIR/'templates', os.path.join(BASE_DIR, 'client\\food-share\\build')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,11 +131,48 @@ STATIC_URL = '/static/'
 if not DEBUG:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STATICFILES_DIRS = [BASE_DIR / "static"]
+
+#changed
+STATICFILES_DIRS = [BASE_DIR / "static", os.path.join(BASE_DIR, 'client\\food-share\\build\\static')]
+
+#client\food-share\public
+# BASE2= Path(__file__).resolve().parent.parent
+# STATICFILES_DIRS = [
+#     os.path.join(BASE2, 'client\\food-share\\public'),
+# ]
+# print('test')
+# print(STATICFILES_DIRS)
+
+
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# print('test')
+# print(STATIC_ROOT)
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SHELL_PLUS = 'python'
 CSRF_TRUSTED_ORIGINS = [
-    'https://food-share-1.onrender.com',
+    'https://localhost:8000',
+    'http://localhost:3000',
+   # 'https://food-share-1.onrender.com',
 ]
+# DRF Configuration (Django REST Framework)
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # Ensure authentication for API endpoints
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',  # Render as JSON by default
+    ],
+}
+# Authentication settings
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default authentication backend
+]
+
+# For User Authentication, you may also need to add `rest_framework.authtoken` if using token-based authentication

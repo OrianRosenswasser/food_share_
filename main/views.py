@@ -1,101 +1,93 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Member, FoodPost, FoodRequest
-from .forms import MemberForm, FoodPostForm, FoodRequestForm
+# views.py
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from main.serializers import FoodPostSerializer, RegisterSerializer
+from .models import Member, FoodPost
+from .forms import MemberForm, FoodPostForm
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import MemberSerializer, FoodPostSerializer, FoodRequestSerializer
+from django.http import JsonResponse
+from rest_framework import generics
 
+# Home Page
+def home(request):
+    return render(request, 'index.html')
+
+# Register View
 @api_view(['GET', 'POST'])
-def post_food_page(request):
+def register(request):
     if request.method == 'GET':
-        return render(request, 'post_food.html')
+        # If it's a GET request, we could return a registration form (for a front-end interface).
+        return Response({"message": "Register page"})
 
     elif request.method == 'POST':
-        posted_by = Member.objects.first()
-        if not posted_by:
-            return Response({'error': 'No members available'}, status=status.HTTP_400_BAD_REQUEST)
-
-        data = request.data.copy()
-        data['posted_by'] = posted_by.id
-
-        serializer = FoodPostSerializer(data=data)
+        serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def home(request):
-    return render(request, 'home.html')
 
-@api_view(['GET', 'POST'])
-def request_food(request, post_id):
-    food_post = get_object_or_404(FoodPost, id=post_id)
-
+# Food Feed View
+@api_view(['GET'])
+def food_feed(request):
     if request.method == 'GET':
-        return render(request, 'request_food.html', {'food_post': food_post})
+        # Get all food posts from the database
+        food_posts = FoodPost.objects.all()
+        # Serialize the food posts
+        serializer = FoodPostSerializer(food_posts, many=True)
+        # Return the serialized data as JSON
+        return Response(serializer.data)
 
     elif request.method == 'POST':
-        request_data = request.data.copy()
-        request_data['food_post'] = food_post.id
-        request_data['requested_by'] = None
-
-        serializer = FoodRequestSerializer(data=request_data)
-
+        # Create a new food post
+        serializer = FoodPostSerializer(data=request.data)
         if serializer.is_valid():
+            # Save the new food post and return it
             serializer.save()
-            return Response({"message": "Food request successfully submitted!"}, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=201)  # 201 Created status
+        return Response(serializer.errors, status=400) 
 
-    return render(request, 'member_list.html')
-
-def register(request): # not a real register for now, dont forget to change" #
-    if request.method == 'POST':
-        form = MemberForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
-    else:
-        form = MemberForm()
-    return render(request, 'register.html', {'form': form})
-
-def login(request):
-    return render(request, 'login.html')
-
-@api_view(['GET', 'DELETE'])
-def food_feed(request, pk=None):
-    if request.method == 'GET' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        food_posts = FoodPost.objects.all().order_by('expiration_date')
+# Post Food View
+@api_view(['GET', 'POST'])
+def post_food_page(request):
+    if request.method == 'GET':
+        # Get all food posts
+        food_posts = FoodPost.objects.all()
         serializer = FoodPostSerializer(food_posts, many=True)
         return Response(serializer.data)
     
-    if request.method == 'DELETE' and pk:
-        try:
-            food_post = FoodPost.objects.get(pk=pk)
-            food_post.delete()
-            return Response({'message': 'Food post deleted successfully!'}, status=204)
-        except FoodPost.DoesNotExist:
-            return Response({'error': 'Food post not found'}, status=404)
-
-    return render(request, 'food_feed.html')
-
-
-
-
-
-@api_view(['GET', 'POST'])
-def register(request):
-    if request.method == 'GET':
-        return render(request, 'register.html')
-    
-    if request.method == 'POST':
-        if Member.objects.filter(email=request.data.get('email')).exists():
-            return Response({"detail": "Email already exists."}, status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = MemberSerializer(data=request.data)
+    elif request.method == 'POST':
+        # Handle the creation of a new food post
+        serializer = FoodPostSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+# Login View (Add actual authentication logic)
+
+@api_view(['GET', 'POST'])
+def login(request):
+    if request.method == 'GET':
+        # Return a login form or message (adjust as necessary)
+        return Response({"message": "Login page"})
+    
+    elif request.method == 'POST':
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return Response({"message": "Logged in successfully"})
+        return Response({"message": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FoodPostDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FoodPost.objects.all()
+    serializer_class = FoodPostSerializer
+
+def index(request):
+    # Ensure the path to your build folder is correct
+    return render(request, 'index.html')
